@@ -45,7 +45,7 @@ public class James : MonoBehaviour
     if (Input.GetMouseButton(0))
     {
       var bg = mWandRotation * new Vector2(1.0f, 0.0f);
-      rb.acceleration.x -= bg.x * wandPower;
+      rb.acceleration.x -= bg.x * wandPower * (rb.colliderArcade.touchingDown ? 1.0f : 10.0f);
       rb.acceleration.y -= bg.y * wandPower * 10.0f;
     }
 

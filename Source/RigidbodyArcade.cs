@@ -102,6 +102,12 @@ public class RigidbodyArcade : MonoBehaviour
     get { return mCollider.group; }
   }
 
+  //
+  public BoxColliderArcade colliderArcade
+  {
+    get { return mCollider; }
+  }
+
   private GameObject mGameObject;
   private Transform mTransform;
   private bool mApplicationIsQuitting;
@@ -110,8 +116,8 @@ public class RigidbodyArcade : MonoBehaviour
   internal Vector2 mDelta;
   internal Vector2 mDeltaAbs;
   internal Vector2 mDeltaSign;
-  internal BoxColliderArcade mCollider;
-  internal List<BoxColliderArcade> mFriendlyIntersectingColliders;
+  private BoxColliderArcade mCollider;
+  private List<BoxColliderArcade> mFriendlyIntersectingColliders;
 
   void Awake()
   {
@@ -209,15 +215,15 @@ public class RigidbodyArcade : MonoBehaviour
       if (hit.axis == 0)
       {
         int direction = hit.delta.x < 0.0f ? -1 : 1;
-        if (direction == 1)
+        if (direction == -1)
         {
           if (mCollider.CanCollide(DirectionArcade.Left))
           {
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {
               mCollider.touching |= DirectionArcade.Left;
-              adjustment.y += hit.delta.y;
-              velocity.y = 0.0f;
+              adjustment.x += hit.delta.x;
+              velocity.x = 0.0f;
             }
             else
             {
@@ -239,8 +245,8 @@ public class RigidbodyArcade : MonoBehaviour
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {
               mCollider.touching |= DirectionArcade.Right;
-              adjustment.y += hit.delta.y;
-              velocity.y = 0.0f;
+              adjustment.x += hit.delta.y;
+              velocity.x = 0.0f;
             }
             else
             {
