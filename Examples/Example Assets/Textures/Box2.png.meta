@@ -1,8 +1,8 @@
 fileFormatVersion: 2
-guid: 9e90986f1bb26bc45b237e35f2b5654a
+guid: 2f55860c2de32c44f96a974b31cd8cbd
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Rectangle
+    21300000: Box2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -23,7 +23,7 @@ TextureImporter:
   generateCubemap: 0
   seamlessCubemap: 0
   textureFormat: -3
-  maxTextureSize: 256
+  maxTextureSize: 1024
   textureSettings:
     filterMode: 0
     aniso: 1

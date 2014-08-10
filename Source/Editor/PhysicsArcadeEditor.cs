@@ -33,6 +33,8 @@ using UnityEditor;
 public class PhysicsArcadeEditor : Editor
 {
   String[] cachedLayerName = new String[32];
+  bool[] cachedLayerUsable = new bool[32];
+
   private GUIStyle rightLabel;
 
 
@@ -69,6 +71,7 @@ public class PhysicsArcadeEditor : Editor
     for (int i = 0; i < 32; i++)
     {
       cachedLayerName[i] = LayerMask.LayerToName(i);
+      cachedLayerUsable[i] = (String.IsNullOrEmpty(cachedLayerName[i]) == false);
     }
 
     EditorGUIUtility.labelWidth = 115f;
@@ -110,14 +113,16 @@ public class PhysicsArcadeEditor : Editor
 
     int cols = 0;
 
+    float hTexelOffset = 0.0f; // 0.5f
+
     for (int i = 0; i < 32; i++)
     {
       int k = 31 - i;
 
-      if (cachedLayerName[k].Length == 0)
+      if (cachedLayerUsable[k] == false)
         continue;
 
-      Vector2 c = new Vector2(headerSize.xMin + 68 + (cols * 14.0f) + 0.5f, headerSize.yMax - 60.0f);
+      Vector2 c = new Vector2(headerSize.xMin + 68 + (cols * 14.0f) + hTexelOffset, headerSize.yMax - 60.0f);
       GUIUtility.RotateAroundPivot(90, new Vector2(c.x + 50.0f, c.y + 10.0f));
       GUI.Label(new Rect(c.x, c.y, 100, 20), cachedLayerName[k], rightLabel);
       GUI.matrix = Matrix4x4.identity;
@@ -128,36 +133,37 @@ public class PhysicsArcadeEditor : Editor
 
     for (int i = 0; i < 32; i++)
     {
-      if (String.IsNullOrEmpty(cachedLayerName[i]))
+      if (cachedLayerUsable[i] == false)
         continue;
 
       GUILayout.BeginHorizontal();
       GUILayout.Label(cachedLayerName[i], rightLabel, GUILayout.Width(EditorGUIUtility.labelWidth - 5));
 
       int c = 0;
-      for (int e = (31 - i); e > -1; e--)
+      //for (int e = (31 - i); e > -1; e--)
+      for (int e = 31; e > -1; e--)
       {
 
         if (String.IsNullOrEmpty(cachedLayerName[e]))
           continue;
 
-        if (c == cols)
+        if (c >= cols)
           break;
         c++;
 
-        int k = 31 - e;
-
-        bool value = !t.GetLayerCollision(i, k);
+        bool value = !t.GetLayerCollision(i, e);
         bool newValue = EditorGUILayout.Toggle(value, GUILayout.Width(10));
 
         if (newValue != value)
         {
-          t.IgnoreCollision(i, k, !newValue);
+          t.IgnoreCollision(i, e, !newValue);
 
-          Debug.Log(String.Format("A{0},{1} = {2}", i, k, t.GetLayerCollision(i, k)));
-          Debug.Log(String.Format("B{0},{1} = {2}", k, i, t.GetLayerCollision(i, k)));
+          //          Debug.Log(String.Format("A{0},{1} = {2}", i, k, t.GetLayerCollision(i, k)));
+          //          Debug.Log(String.Format("B{0},{1} = {2}", k, i, t.GetLayerCollision(i, k)));
         }
       }
+
+      GUI.enabled = true;
 
       GUILayout.FlexibleSpace();
       GUILayout.EndHorizontal();

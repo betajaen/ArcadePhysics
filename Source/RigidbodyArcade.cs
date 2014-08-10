@@ -188,7 +188,10 @@ public class RigidbodyArcade : MonoBehaviour
       if (collider == mCollider)
         continue;
 
-      // TODO: Layer checking.
+      bool canCollide = PhysicsArcade.Internal.instance.GetLayerCollision(mGameObject.layer, collider.gameObject.layer);
+
+      if (canCollide)
+        continue;
 
       if (mCollider.MovingIntersection(collider, nextPosition, ref hit) == false)
         continue;
