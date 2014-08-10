@@ -12,32 +12,42 @@ public class James : MonoBehaviour
   private Vector2 screenCoordsMe;
   private float angle;
   private Quaternion mWandRotation;
+  private int movementFlags;
 
-  private const int kUp = 1;
-  private const int kDown = 2;
-  private const int kLeft = 4;
-  private const int kRight = 8;
-
-
+  private RigidbodyArcade rb;
+  private float wandPower;
   void Start()
   {
     cam = Camera.main;
     trans = transform;
+    rb = GetComponent<RigidbodyArcade>();
+    rb.drag.x = rb.maxVelocity.x * 4.0f;
+    wandPower = 1.0f;
   }
 
-  void Update()
-  {
-
-  }
 
   void FixedUpdate()
   {
-    DoMove();
     DoWand();
+    DoMove();
   }
 
   void DoMove()
   {
+    rb.acceleration.x = 0.0f;
+
+    if (Input.GetKey(KeyCode.A))
+      rb.acceleration.x = -rb.maxVelocity.x * 4.0f;
+
+    if (Input.GetKey(KeyCode.D))
+      rb.acceleration.x = rb.maxVelocity.x * 4.0f;
+
+    if (Input.GetMouseButton(0))
+    {
+      var bg = mWandRotation * new Vector2(1.0f, 0.0f);
+      rb.acceleration.x -= bg.x * wandPower;
+      rb.acceleration.y -= bg.y * wandPower * 10.0f;
+    }
 
   }
 
