@@ -27,7 +27,8 @@
 
 using UnityEngine;
 
-[AddComponentMenu("Physics Arcade/Box Collider")]
+[AddComponentMenu("Physics Arcade/Box Collider Arcade")]
+[DisallowMultipleComponent]
 public class BoxColliderArcade : MonoBehaviour
 {
 
@@ -222,6 +223,11 @@ public class BoxColliderArcade : MonoBehaviour
 
     return true;
 
+  }
+
+  public bool CanCollide(DirectionArcade direction)
+  {
+    return (collision & direction) != 0;
   }
 
 }

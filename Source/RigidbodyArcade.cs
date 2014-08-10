@@ -42,8 +42,9 @@ public enum DirectionArcade
   All = Horizontal | Vertical
 }
 
-[AddComponentMenu("Physics Arcade/Rigidbody")]
+[AddComponentMenu("Physics Arcade/Rigidbody Arcade")]
 [RequireComponent(typeof(BoxColliderArcade))]
+[DisallowMultipleComponent]
 public class RigidbodyArcade : MonoBehaviour
 {
 
@@ -110,6 +111,15 @@ public class RigidbodyArcade : MonoBehaviour
   internal Vector2 mDeltaAbs;
   internal Vector2 mDeltaSign;
   internal BoxColliderArcade mCollider;
+  internal List<BoxColliderArcade> mFriendlyIntersectingColliders;
+
+  void Awake()
+  {
+    if (mFriendlyIntersectingColliders == null)
+    {
+      mFriendlyIntersectingColliders = new List<BoxColliderArcade>(4);
+    }
+  }
 
   void OnApplicationQuit()
   {
@@ -188,35 +198,114 @@ public class RigidbodyArcade : MonoBehaviour
       if (collider == mCollider)
         continue;
 
-      bool canCollide = PhysicsArcade.Internal.instance.GetLayerCollision(mGameObject.layer, collider.gameObject.layer);
+      bool layerCollisionIgnored = PhysicsArcade.Internal.instance.GetLayerCollision(mGameObject.layer, collider.gameObject.layer);
 
-      if (canCollide)
+      if (layerCollisionIgnored)
         continue;
 
       if (mCollider.MovingIntersection(collider, nextPosition, ref hit) == false)
         continue;
 
-      adjustment.x += hit.delta.x;
-      adjustment.y += hit.delta.y;
-      velocity[hit.axis] = 0.0f;
-
       if (hit.axis == 0)
       {
         int direction = hit.delta.x < 0.0f ? -1 : 1;
         if (direction == 1)
-          mCollider.touching |= DirectionArcade.Left;
+        {
+          if (mCollider.CanCollide(DirectionArcade.Left))
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mCollider.touching |= DirectionArcade.Left;
+              adjustment.y += hit.delta.y;
+              velocity.y = 0.0f;
+            }
+            else
+            {
+              mFriendlyIntersectingColliders.Remove(collider);
+            }
+          }
+          else
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mFriendlyIntersectingColliders.Add(collider);
+            }
+          }
+        }
         else
-          mCollider.touching |= DirectionArcade.Right;
+        {
+          if (mCollider.CanCollide(DirectionArcade.Right))
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mCollider.touching |= DirectionArcade.Right;
+              adjustment.y += hit.delta.y;
+              velocity.y = 0.0f;
+            }
+            else
+            {
+              mFriendlyIntersectingColliders.Remove(collider);
+            }
+          }
+          else
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mFriendlyIntersectingColliders.Add(collider);
+            }
+          }
+        }
       }
       else
       {
         int direction = hit.delta.y < 0.0f ? -1 : 1;
         if (direction == 1)
-          mCollider.touching |= DirectionArcade.Down;
+        {
+          if (mCollider.CanCollide(DirectionArcade.Down))
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mCollider.touching |= DirectionArcade.Down;
+              adjustment.y += hit.delta.y;
+              velocity.y = 0.0f;
+            }
+            else
+            {
+              mFriendlyIntersectingColliders.Remove(collider);
+            }
+          }
+          else
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mFriendlyIntersectingColliders.Add(collider);
+            }
+          }
+        }
         else
-          mCollider.touching |= DirectionArcade.Up;
+        {
+          if (mCollider.CanCollide(DirectionArcade.Up))
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mCollider.touching |= DirectionArcade.Up;
+              adjustment.y += hit.delta.y;
+              velocity.y = 0.0f;
+            }
+            else
+            {
+              mFriendlyIntersectingColliders.Remove(collider);
+            }
+          }
+          else
+          {
+            if (mFriendlyIntersectingColliders.Contains(collider) == false)
+            {
+              mFriendlyIntersectingColliders.Add(collider);
+            }
+          }
+        }
       }
-
 
     }
 

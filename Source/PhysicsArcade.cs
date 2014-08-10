@@ -35,7 +35,8 @@ public struct PhysicsArcadeHit
   public int axis;
 }
 
-[AddComponentMenu("Physics Arcade/Physics")]
+[AddComponentMenu("Physics Arcade/Physics Arcade")]
+[DisallowMultipleComponent]
 public class PhysicsArcade : MonoBehaviour
 {
 
