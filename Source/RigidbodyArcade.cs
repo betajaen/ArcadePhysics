@@ -215,13 +215,13 @@ public class RigidbodyArcade : MonoBehaviour
       if (hit.axis == 0)
       {
         int direction = hit.delta.x < 0.0f ? -1 : 1;
-        if (direction == -1)
+        if (direction == 1)
         {
-          if (mCollider.CanCollide(DirectionArcade.Left))
+          if (mCollider.CanCollide(DirectionArcade.Right))
           {
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {
-              mCollider.touching |= DirectionArcade.Left;
+              mCollider.touching |= DirectionArcade.Right;
               adjustment.x += hit.delta.x;
               velocity.x = 0.0f;
             }
@@ -240,11 +240,11 @@ public class RigidbodyArcade : MonoBehaviour
         }
         else
         {
-          if (mCollider.CanCollide(DirectionArcade.Right))
+          if (mCollider.CanCollide(DirectionArcade.Left))
           {
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {
-              mCollider.touching |= DirectionArcade.Right;
+              mCollider.touching |= DirectionArcade.Left;
               adjustment.x += hit.delta.y;
               velocity.x = 0.0f;
             }

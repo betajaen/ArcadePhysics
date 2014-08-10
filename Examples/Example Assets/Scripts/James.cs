@@ -6,6 +6,7 @@ public class James : MonoBehaviour
 
   public GameObject wand;
   public float wandDistance = 0.32f;
+  public ProjectileManager Manager;
 
   private Camera cam;
   private Transform trans;
@@ -16,6 +17,8 @@ public class James : MonoBehaviour
 
   private RigidbodyArcade rb;
   private float wandPower;
+  private float missileTimer;
+
   void Start()
   {
     cam = Camera.main;
@@ -23,6 +26,7 @@ public class James : MonoBehaviour
     rb = GetComponent<RigidbodyArcade>();
     rb.drag.x = rb.maxVelocity.x * 4.0f;
     wandPower = 1.0f;
+    missileTimer = 0.0f;
   }
 
 
@@ -42,11 +46,16 @@ public class James : MonoBehaviour
     if (Input.GetKey(KeyCode.D))
       rb.acceleration.x = rb.maxVelocity.x * 4.0f;
 
-    if (Input.GetMouseButton(0))
+    missileTimer += Time.fixedDeltaTime;
+
+    if (Input.GetMouseButton(0) && missileTimer > 0.01f)
     {
+      missileTimer = 0.0f;
       var bg = mWandRotation * new Vector2(1.0f, 0.0f);
       rb.acceleration.x -= bg.x * wandPower * (rb.colliderArcade.touchingDown ? 1.0f : 10.0f);
       rb.acceleration.y -= bg.y * wandPower * 10.0f;
+      var projectile = Manager.GetProjectile();
+      projectile.Reuse(trans.position + mWandRotation * new Vector2(0.32f, 0.0f), mWandRotation * new Vector3(2.56f, 0.0f));
     }
 
   }
