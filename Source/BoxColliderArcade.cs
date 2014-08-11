@@ -32,7 +32,8 @@ using UnityEngine;
 public class BoxColliderArcade : MonoBehaviour
 {
 
-  //
+  // size - Size of the Box collider
+  // Default: 1, 1
   public Vector2 size
   {
     get
@@ -46,40 +47,54 @@ public class BoxColliderArcade : MonoBehaviour
     }
   }
 
-  //
+  // Offset of the Box collider, relative to the GameObject position.
+  // Default: 0, 0
   public Vector2 center;
 
-  //
+  // Allowable collisions
+  // Default: All (Left, Right, Up and Down)
   public DirectionArcade collision = DirectionArcade.All;
 
-  //
+  // Current edges of the Box collider that are touching another Box collider
+  // Default: None
   public DirectionArcade touching = DirectionArcade.None;
 
-  //
+  // Is this collider's down edge touching another collider?
+  // Default: false
   public bool touchingDown
   {
     get { return (touching & DirectionArcade.Down) != 0; }
   }
 
+  // Is this collider's up edge touching another collider?
+  // Default: false
   public bool touchingUp
   {
     get { return (touching & DirectionArcade.Up) != 0; }
   }
 
+  // Is this collider's left or right edge touching another collider?
+  // Default: false
   public bool touchingHorizontal
   {
     get { return (touching & DirectionArcade.Horizontal) != 0; }
   }
 
+  // Is this collider's up or down edge touching another collider?
+  // Default: false
   public bool touchingVertical
   {
     get { return (touching & DirectionArcade.Vertical) != 0; }
   }
 
-  //
+  // Is this collider a trigger, i.e. Collisions are allowed through but
+  // reported to a OnTriggerArcade function.
+  // Default: false
   public bool trigger;
 
-  //
+  // What group index does this collider belong to?
+  // Default: 0
+  // See: PhysicsArcade.group
   public int group
   {
     get
@@ -106,7 +121,14 @@ public class BoxColliderArcade : MonoBehaviour
     }
   }
 
-  //
+  // Is the BoxCollider enabled.
+  // Same as MonoBehaviour.enabled
+  public bool isEnabled
+  {
+    get { return mCachedEnabled; }
+  }
+
+  // The bounds of this BoxCollider
   public Bounds bounds
   {
     get
@@ -119,40 +141,37 @@ public class BoxColliderArcade : MonoBehaviour
     }
   }
 
-  //
+  // Internal - BoxCollider Group
+  // See: BoxCollider.group
   [SerializeField]
   private int mGroup;
 
-  //
+  // Internal - BoxCollider Size
+  // See: BoxCollider.size
   [SerializeField]
   private Vector2 mSize = new Vector2(1.0f, 1.0f);
 
-  //
+  // Internal - BoxCollider's cached Size / 2
   [SerializeField]
   private Vector2 mHalfSize = new Vector2(0.5f, 0.5f);
 
-  //
+  // Internal - Cached GameObject reference
   private GameObject mGameObject;
 
-  //
+  // Internal - Cached Transform reference
   internal Transform mTransform;
 
-  //
+  // Internal - The application is quitting, the Box Collider should avoid cleanup
   private bool mApplicationIsQuitting;
 
-  //
+  // Internal - Is this BoxCollider enabled or not.
   private bool mCachedEnabled;
 
-  // 
-  public bool isEnabled
-  {
-    get { return mCachedEnabled; }
-  }
-
-  //
+  // Internal - Cached RigidBodyArcade, if it has one, otherwise null.
   private RigidbodyArcade mRigidbody;
 
-
+  // Enable event
+  // BoxCollider is refreshed, and added to the PhysicsArcade frame events, only if the Application isn't quitting.
   void OnEnable()
   {
     mCachedEnabled = true;
@@ -162,6 +181,8 @@ public class BoxColliderArcade : MonoBehaviour
     PhysicsArcade.Internal.instance.Add(this);
   }
 
+  // Disabled event
+  // BoxCollider removed from the PhysicsArcade frame events, only if the Application isn't quitting.
   void OnDisable()
   {
     mCachedEnabled = false;
@@ -172,11 +193,15 @@ public class BoxColliderArcade : MonoBehaviour
     }
   }
 
+  // Application Quit
+  // A flag is set to stop Disable events firing, avoiding any possible exceptions from deleted GameObjects.
   void OnApplicationQuit()
   {
     mApplicationIsQuitting = true;
   }
 
+  // OnRigidBody removed
+  // When a rigidbody is removed from the GameObject as this BoxCollider, triggered by PhysicsArcade
   public void OnRigidbodyRemoved()
   {
     mRigidbody = null;

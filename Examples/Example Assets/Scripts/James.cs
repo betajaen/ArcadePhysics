@@ -55,14 +55,13 @@ public class James : MonoBehaviour
       rb.acceleration.x -= bg.x * wandPower * (rb.colliderArcade.touchingDown ? 1.0f : 10.0f);
       rb.acceleration.y -= bg.y * wandPower * 10.0f;
       var projectile = Manager.GetProjectile();
-      projectile.Reuse(trans.position + mWandRotation * new Vector2(0.32f, 0.0f), mWandRotation * new Vector3(2.56f, 0.0f));
+      projectile.Reuse(trans.position + mWandRotation * new Vector2(0.42f, 0.0f), mWandRotation * new Vector3(2.56f, 0.0f));
     }
 
   }
 
   void DoWand()
   {
-
     var sc = cam.ScreenToWorldPoint(Input.mousePosition);
     var t = sc - trans.position;
 
