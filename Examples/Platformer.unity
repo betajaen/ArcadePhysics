@@ -1001,7 +1001,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wand: {fileID: 989066612}
   wandDistance: .319999993
-  Manager: {fileID: 1875823835}
+  mProjectileManager: {fileID: 0}
 --- !u!114 &1875823833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,7 +1058,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f089afc92931164a95f96f2c3d4940a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  msOriginal: {fileID: 1210077833}
+  Original: {fileID: 1210077833}
 --- !u!1 &2078640482
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,6 @@ public class Projectile : MonoBehaviour
   private BoxColliderArcade mCollider;
   private float mTime;
 
-
   void Start()
   {
     Manager.Add(this);

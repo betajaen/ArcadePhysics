@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class ProjectileManager : MonoBehaviour
 {
 
-  public Projectile msOriginal;
+  public Projectile Original;
 
 
   private static List<Projectile> msFreeProjectiles;
@@ -23,7 +23,7 @@ public class ProjectileManager : MonoBehaviour
       msFreeProjectiles.RemoveAt(last);
       return projectile;
     }
-    var thing = Object.Instantiate(msOriginal);
+    var thing = Object.Instantiate(Original);
     return thing as Projectile;
   }
 
