@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -358,7 +358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -575,7 +575,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -644,7 +644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -788,7 +788,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -823,7 +823,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -892,7 +892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -1041,7 +1041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0
@@ -1150,7 +1150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collision: 15
+  collisionEdges: 15
   touching: 0
   trigger: 0
   mGroup: 0

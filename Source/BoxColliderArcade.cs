@@ -51,9 +51,9 @@ public class BoxColliderArcade : MonoBehaviour
   // Default: 0, 0
   public Vector2 center;
 
-  // Allowable collisions
+  // Allowable collision edges
   // Default: All (Left, Right, Up and Down)
-  public DirectionArcade collision = DirectionArcade.All;
+  public DirectionArcade collisionEdges = DirectionArcade.All;
 
   // Current edges of the Box collider that are touching another Box collider
   // Default: None
@@ -207,6 +207,15 @@ public class BoxColliderArcade : MonoBehaviour
     mRigidbody = null;
   }
 
+  // Perform an intersection test against another BoxCollider where this BoxCollider is moving.
+  // Notes:
+  //    Filtering against groups and layers should be done before calling this function.
+  // Arguments:
+  //    other - BoxCollider to test against.
+  //    nextWorldPosition - Where the BoxColliderArcade is intended to be
+  //    ref hit - If it hits where it hits against (delta/axis)
+  // Return:
+  //    If there was an intersection or not.
   public bool MovingIntersection(BoxColliderArcade other, Vector2 nextWorldPosition, ref PhysicsArcadeHit hit)
   {
     Vector2 otherPos = (Vector2)other.mTransform.position + other.center;
@@ -247,12 +256,12 @@ public class BoxColliderArcade : MonoBehaviour
     }
 
     return true;
-
   }
 
-  public bool CanCollide(DirectionArcade direction)
+  // Can the edge of this BoxCollider collide?
+  public bool CanEdgeCollide(DirectionArcade direction)
   {
-    return (collision & direction) != 0;
+    return (collisionEdges & direction) != 0;
   }
 
 }

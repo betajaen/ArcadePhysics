@@ -217,7 +217,7 @@ public class RigidbodyArcade : MonoBehaviour
         int direction = hit.delta.x < 0.0f ? -1 : 1;
         if (direction == 1)
         {
-          if (mCollider.CanCollide(DirectionArcade.Right))
+          if (mCollider.CanEdgeCollide(DirectionArcade.Right))
           {
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {
@@ -240,7 +240,7 @@ public class RigidbodyArcade : MonoBehaviour
         }
         else
         {
-          if (mCollider.CanCollide(DirectionArcade.Left))
+          if (mCollider.CanEdgeCollide(DirectionArcade.Left))
           {
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {
@@ -267,7 +267,7 @@ public class RigidbodyArcade : MonoBehaviour
         int direction = hit.delta.y < 0.0f ? -1 : 1;
         if (direction == 1)
         {
-          if (mCollider.CanCollide(DirectionArcade.Down))
+          if (mCollider.CanEdgeCollide(DirectionArcade.Down))
           {
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {
@@ -290,7 +290,7 @@ public class RigidbodyArcade : MonoBehaviour
         }
         else
         {
-          if (mCollider.CanCollide(DirectionArcade.Up))
+          if (mCollider.CanEdgeCollide(DirectionArcade.Up))
           {
             if (mFriendlyIntersectingColliders.Contains(collider) == false)
             {

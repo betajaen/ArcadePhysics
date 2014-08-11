@@ -25,6 +25,7 @@
     
 */
 
+using System;
 using UnityEngine;
 using UnityEditor;
 
@@ -32,9 +33,19 @@ using UnityEditor;
 public class BoxColliderArcadeEditor : Editor
 {
 
+  private static GUIStyle msSpriteStyle;
+
   public override void OnInspectorGUI()
   {
     BoxColliderArcade t = (BoxColliderArcade)this.target;
+    SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+
+    if (msSpriteStyle == null)
+    {
+      msSpriteStyle = new GUIStyle(EditorStyles.textArea);
+      msSpriteStyle.alignment = TextAnchor.MiddleCenter;
+      msSpriteStyle.imagePosition = ImagePosition.ImageOnly;
+    }
 
     t.size = EditorGUILayout.Vector2Field("Size", t.size);
 
@@ -52,28 +63,35 @@ public class BoxColliderArcadeEditor : Editor
 
     GUILayout.BeginHorizontal();
     bool oldValue = GetCollisionDirection(t, DirectionArcade.Up);
-    bool newValue = GUILayout.Toggle(oldValue, "U", GUI.skin.button, GUILayout.Height(20));
+    bool newValue = GUILayout.Toggle(oldValue, new GUIContent("U", "Up"), GUI.skin.button, GUILayout.Height(20));
     SetCollisionDirection(t, DirectionArcade.Up, oldValue, newValue);
     GUILayout.EndHorizontal();
 
     GUILayout.BeginHorizontal();
     oldValue = GetCollisionDirection(t, DirectionArcade.Left);
-    newValue = GUILayout.Toggle(oldValue, "L", GUI.skin.button, GUILayout.Width(20), GUILayout.Height(60));
+    newValue = GUILayout.Toggle(oldValue, new GUIContent("L", "Left"), GUI.skin.button, GUILayout.Width(20), GUILayout.Height(60));
     SetCollisionDirection(t, DirectionArcade.Left, oldValue, newValue);
 
     oldValue = GetCollisionAll(t);
-    newValue = GUILayout.Toggle(oldValue, System.String.Empty, GUI.skin.textArea, GUILayout.Width(60), GUILayout.Height(60));
+    if (sr != null && sr.sprite != null)
+    {
+      newValue = GUILayout.Toggle(oldValue, new GUIContent(sr.sprite.texture, "All or No Collisions"), msSpriteStyle, GUILayout.Width(60), GUILayout.Height(60));
+    }
+    else
+    {
+      newValue = GUILayout.Toggle(oldValue, new GUIContent(String.Empty, "All or No Collisions"), msSpriteStyle, GUILayout.Width(60), GUILayout.Height(60));
+    }
     SetCollisionDirectionAll(t, oldValue, newValue);
 
     oldValue = GetCollisionDirection(t, DirectionArcade.Right);
-    newValue = GUILayout.Toggle(oldValue, "R", GUI.skin.button, GUILayout.Width(20), GUILayout.Height(60));
+    newValue = GUILayout.Toggle(oldValue, new GUIContent("R", "Right"), GUI.skin.button, GUILayout.Width(20), GUILayout.Height(60));
     SetCollisionDirection(t, DirectionArcade.Right, oldValue, newValue);
 
     GUILayout.EndHorizontal();
 
     GUILayout.BeginHorizontal();
     oldValue = GetCollisionDirection(t, DirectionArcade.Down);
-    newValue = GUILayout.Toggle(oldValue, "D", GUI.skin.button, GUILayout.Height(20));
+    newValue = GUILayout.Toggle(oldValue, new GUIContent("D", "Down"), GUI.skin.button, GUILayout.Height(20));
     SetCollisionDirection(t, DirectionArcade.Down, oldValue, newValue);
     GUILayout.EndHorizontal();
 
@@ -84,7 +102,7 @@ public class BoxColliderArcadeEditor : Editor
 
   static bool GetCollisionAll(BoxColliderArcade collider)
   {
-    return collider.collision == DirectionArcade.All;
+    return collider.collisionEdges == DirectionArcade.All;
   }
 
   private static void SetCollisionDirectionAll(BoxColliderArcade collider, bool oldValue, bool newValue)
@@ -92,15 +110,15 @@ public class BoxColliderArcadeEditor : Editor
     if (oldValue != newValue)
     {
       if (newValue)
-        collider.collision = DirectionArcade.All;
+        collider.collisionEdges = DirectionArcade.All;
       else
-        collider.collision = DirectionArcade.None;
+        collider.collisionEdges = DirectionArcade.None;
     }
   }
 
   static bool GetCollisionDirection(BoxColliderArcade collider, DirectionArcade direction)
   {
-    return (collider.collision & direction) != 0;
+    return (collider.collisionEdges & direction) != 0;
   }
 
   static void SetCollisionDirection(BoxColliderArcade collider, DirectionArcade direction, bool oldValue, bool newValue)
@@ -108,9 +126,9 @@ public class BoxColliderArcadeEditor : Editor
     if (oldValue != newValue)
     {
       if (newValue)
-        collider.collision |= direction;
+        collider.collisionEdges |= direction;
       else
-        collider.collision &= ~direction;
+        collider.collisionEdges &= ~direction;
     }
   }
 
@@ -125,28 +143,28 @@ public class BoxColliderArcadeEditor : Editor
     Bounds bounds = t.bounds;
     Vector3 min = bounds.min, max = bounds.max;
 
-    if ((t.collision & DirectionArcade.Left) != 0)
+    if ((t.collisionEdges & DirectionArcade.Left) != 0)
       Handles.color = Color.green;
     else
       Handles.color = Color.grey;
 
     Handles.DrawLine(new Vector3(min.x, min.y, min.z), new Vector3(min.x, max.y, min.z));
 
-    if ((t.collision & DirectionArcade.Up) != 0)
+    if ((t.collisionEdges & DirectionArcade.Up) != 0)
       Handles.color = Color.green;
     else
       Handles.color = Color.grey;
 
     Handles.DrawLine(new Vector3(min.x, max.y, min.z), new Vector3(max.x, max.y, min.z));
 
-    if ((t.collision & DirectionArcade.Right) != 0)
+    if ((t.collisionEdges & DirectionArcade.Right) != 0)
       Handles.color = Color.green;
     else
       Handles.color = Color.grey;
 
     Handles.DrawLine(new Vector3(max.x, max.y, min.z), new Vector3(max.x, min.y, min.z));
 
-    if ((t.collision & DirectionArcade.Down) != 0)
+    if ((t.collisionEdges & DirectionArcade.Down) != 0)
       Handles.color = Color.green;
     else
       Handles.color = Color.grey;
