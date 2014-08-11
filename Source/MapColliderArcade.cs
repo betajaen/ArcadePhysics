@@ -25,21 +25,11 @@
     
 */
 
-using System;
 using UnityEngine;
-using UnityEditor;
 
-[CustomEditor(typeof(MapColliderArcade))]
-public class MapColliderArcadeEditor : Editor
+[AddComponentMenu("Physics Arcade/Map Collider Arcade")]
+[DisallowMultipleComponent]
+public class MapColliderArcade : MonoBehaviour
 {
-
-  private static GUIStyle msSpriteStyle;
-
-  public override void OnInspectorGUI()
-  {
-    BoxColliderArcade t = (BoxColliderArcade)this.target;
-
-  }
-
 }
 
