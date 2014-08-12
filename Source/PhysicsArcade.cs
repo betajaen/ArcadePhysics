@@ -35,6 +35,8 @@ public struct PhysicsArcadeHit
   public int axis;
 }
 
+#region Physics Arcade
+
 [AddComponentMenu("Physics Arcade/Physics Arcade")]
 [DisallowMultipleComponent]
 public class PhysicsArcade : MonoBehaviour
@@ -230,43 +232,42 @@ public class PhysicsArcade : MonoBehaviour
 #endif
   }
 
-
-  public void Add(BoxColliderArcade boxCollider)
+  public void Add(ColliderArcade collider)
   {
-    PhysicsArcadeCollisionGroup group = GetGroup(boxCollider.group);
+    PhysicsArcadeCollisionGroup group = GetGroup(collider.group);
 
     if (group.mIterating)
     {
       group.colliders.modified = true;
-      group.colliders.modifier.Add(boxCollider);
+      group.colliders.modifier.Add(collider);
     }
     else
     {
-      group.colliders.modifier.Add(boxCollider);
-      group.colliders.iterator.Add(boxCollider);
+      group.colliders.modifier.Add(collider);
+      group.colliders.iterator.Add(collider);
     }
   }
 
-  public void Remove(BoxColliderArcade boxCollider)
+  public void Remove(ColliderArcade collider)
   {
-    PhysicsArcadeCollisionGroup group = GetGroup(boxCollider.group);
+    PhysicsArcadeCollisionGroup group = GetGroup(collider.group);
 
     if (group.mIterating)
     {
       group.colliders.modified = true;
-      group.colliders.modifier.Remove(boxCollider);
+      group.colliders.modifier.Remove(collider);
     }
     else
     {
-      group.colliders.modifier.Remove(boxCollider);
-      group.colliders.iterator.Remove(boxCollider);
+      group.colliders.modifier.Remove(collider);
+      group.colliders.iterator.Remove(collider);
     }
   }
 
-  public void Regroup(BoxColliderArcade boxCollider, int oldGroupId)
+  public void Regroup(ColliderArcade collider, int oldGroupId)
   {
     PhysicsArcadeCollisionGroup oldGroup = GetGroup(oldGroupId);
-    PhysicsArcadeCollisionGroup newGroup = GetGroup(boxCollider.group);
+    PhysicsArcadeCollisionGroup newGroup = GetGroup(collider.group);
 
     if (oldGroup == newGroup)
       return;
@@ -274,23 +275,23 @@ public class PhysicsArcade : MonoBehaviour
     if (newGroup.mIterating)
     {
       newGroup.colliders.modified = true;
-      newGroup.colliders.modifier.Add(boxCollider);
+      newGroup.colliders.modifier.Add(collider);
     }
     else
     {
-      newGroup.colliders.modifier.Add(boxCollider);
-      newGroup.colliders.iterator.Add(boxCollider);
+      newGroup.colliders.modifier.Add(collider);
+      newGroup.colliders.iterator.Add(collider);
     }
 
     if (oldGroup.mIterating)
     {
       newGroup.colliders.modified = true;
-      oldGroup.colliders.modifier.Remove(boxCollider);
+      oldGroup.colliders.modifier.Remove(collider);
     }
     else
     {
-      oldGroup.colliders.modifier.Remove(boxCollider);
-      oldGroup.colliders.iterator.Remove(boxCollider);
+      oldGroup.colliders.modifier.Remove(collider);
+      oldGroup.colliders.iterator.Remove(collider);
     }
 
   }
@@ -389,6 +390,12 @@ public class PhysicsArcade : MonoBehaviour
 
 }
 
+#endregion
+
+////////////////////////////////////////////////////////////////////////
+
+#region Collision Group
+
 [Serializable]
 public class PhysicsArcadeCollisionGroup
 {
@@ -402,7 +409,7 @@ public class PhysicsArcadeCollisionGroup
   public bool resolveCollisions = true;
 
   [NonSerialized]
-  public readonly PhysicsArcade.PhysicsDoubleBuffer<BoxColliderArcade> colliders;
+  public readonly PhysicsArcade.PhysicsDoubleBuffer<ColliderArcade> colliders;
 
   [NonSerialized]
   public readonly PhysicsArcade.PhysicsDoubleBuffer<RigidbodyArcade> rigidbodies;
@@ -412,7 +419,235 @@ public class PhysicsArcadeCollisionGroup
 
   public PhysicsArcadeCollisionGroup()
   {
-    colliders = new PhysicsArcade.PhysicsDoubleBuffer<BoxColliderArcade>();
+    colliders = new PhysicsArcade.PhysicsDoubleBuffer<ColliderArcade>();
     rigidbodies = new PhysicsArcade.PhysicsDoubleBuffer<RigidbodyArcade>();
   }
 }
+
+#endregion
+
+////////////////////////////////////////////////////////////////////////
+
+#region ColliderArcade
+
+public abstract class ColliderArcade : MonoBehaviour
+{
+
+  // Offset of the collider, relative to the GameObject position.
+  // Default: 0, 0
+  public Vector2 center;
+
+  // Current edges of the Box collider that are touching another Box collider
+  // Default: None
+  public DirectionArcade touching = DirectionArcade.None;
+
+  // Is this collider's down edge touching another collider?
+  // Default: false
+  public bool touchingDown
+  {
+    get { return (touching & DirectionArcade.Down) != 0; }
+  }
+
+  // Is this collider's up edge touching another collider?
+  // Default: false
+  public bool touchingUp
+  {
+    get { return (touching & DirectionArcade.Up) != 0; }
+  }
+
+  // Is this collider's left or right edge touching another collider?
+  // Default: false
+  public bool touchingHorizontal
+  {
+    get { return (touching & DirectionArcade.Horizontal) != 0; }
+  }
+
+  // Is this collider's up or down edge touching another collider?
+  // Default: false
+  public bool touchingVertical
+  {
+    get { return (touching & DirectionArcade.Vertical) != 0; }
+  }
+
+  // What group index does this collider belong to?
+  // Default: 0
+  // See: PhysicsArcade.group
+  public int group
+  {
+    get
+    {
+      return mGroup;
+    }
+    set
+    {
+      if (mGroup == value)
+        return;
+      if (Application.isPlaying)
+      {
+        int oldValue = mGroup;
+        mGroup = value;
+        if (mCachedEnabled)
+        {
+          PhysicsArcade.Internal.instance.Regroup(this, oldValue);
+        }
+      }
+      else
+      {
+        mGroup = value;
+      }
+    }
+  }
+
+
+  // Internal - BoxCollider Group
+  // See: BoxCollider.group
+  [SerializeField]
+  private int mGroup;
+
+  // Internal - Cached GameObject reference
+  private GameObject mGameObject;
+
+  // Internal - Cached Transform reference
+  internal Transform mTransform;
+
+  // Internal - The application is quitting, the Box Collider should avoid cleanup
+  private bool mApplicationIsQuitting;
+
+  // Internal - Is this BoxCollider enabled or not.
+  private bool mCachedEnabled;
+
+  // Internal - Cached RigidBodyArcade, if it has one, otherwise null.
+  private RigidbodyArcade mRigidbody;
+
+  // Enable event
+  // BoxCollider is refreshed, and added to the PhysicsArcade frame events, only if the Application isn't quitting.
+  void OnEnable()
+  {
+    mCachedEnabled = true;
+    mGameObject = gameObject;
+    mTransform = gameObject.transform;
+    mRigidbody = GetComponent<RigidbodyArcade>();
+    PhysicsArcade.Internal.instance.Add(this);
+  }
+
+  // Disabled event
+  // BoxCollider removed from the PhysicsArcade frame events, only if the Application isn't quitting.
+  void OnDisable()
+  {
+    mCachedEnabled = false;
+
+    if (mApplicationIsQuitting == false)
+    {
+      PhysicsArcade.Internal.instance.Remove(this);
+    }
+  }
+
+  // Application Quit
+  // A flag is set to stop Disable events firing, avoiding any possible exceptions from deleted GameObjects.
+  void OnApplicationQuit()
+  {
+    mApplicationIsQuitting = true;
+  }
+
+  // OnRigidBody removed
+  // When a rigidbody is removed from the GameObject as this BoxCollider, triggered by PhysicsArcade
+  public void OnRigidbodyRemoved()
+  {
+    mRigidbody = null;
+  }
+
+  // Can the edge of this BoxCollider collide?
+  public abstract bool CanEdgeCollide(DirectionArcade direction);
+
+  public abstract Bounds bounds
+  {
+    get;
+  }
+
+  public static bool IntersectionMoving(ColliderArcade moving, ColliderArcade stationary, Vector2 movingNextPosition, ref PhysicsArcadeHit hit)
+  {
+    Type movingType = moving.GetType();
+    Type stationaryType = stationary.GetType();
+
+    if (movingType == typeof(BoxColliderArcade))
+    {
+      if (stationaryType == typeof(BoxColliderArcade))
+        return IntersectionMovingBoxVsBox(moving as BoxColliderArcade, stationary as BoxColliderArcade,
+          movingNextPosition, ref hit);
+      if (stationaryType == typeof(PointColliderArcade))
+        return IntersectionMovingBoxVsPoint(moving as BoxColliderArcade, stationary as PointColliderArcade,
+          movingNextPosition, ref hit);
+    }
+    else if (movingType == typeof(PointColliderArcade))
+    {
+      if (stationaryType == typeof(BoxColliderArcade))
+        return IntersectionMovingLineVsBox(moving as PointColliderArcade, stationary as BoxColliderArcade,
+          movingNextPosition, ref hit);
+      if (stationaryType == typeof(PointColliderArcade))
+        return IntersectionMovingLineVsPoint(moving as PointColliderArcade, stationary as PointColliderArcade,
+          movingNextPosition, ref hit);
+    }
+
+    return false;
+  }
+
+  private static bool IntersectionMovingBoxVsBox(BoxColliderArcade moving, BoxColliderArcade stationary, Vector2 next, ref PhysicsArcadeHit hit)
+  {
+    Vector2 otherPos = (Vector2)stationary.mTransform.position + stationary.center;
+    Vector2 pos = next + moving.center;
+
+    Vector2 size = Vector2.Scale(moving.mHalfSize, moving.mTransform.localScale);
+    Vector2 otherSize = Vector2.Scale(stationary.mHalfSize, stationary.mTransform.localScale);
+
+    float deltaX = pos.x - otherPos.x;
+    float penetrationX = (size.x + otherSize.x) - Mathf.Abs(deltaX);
+
+    if (penetrationX <= 0.0f)
+    {
+      return false;
+    }
+
+    float deltaY = pos.y - otherPos.y;
+    float penetrationY = (size.y + otherSize.y) - Mathf.Abs(deltaY);
+
+    if (penetrationY <= 0.0f)
+    {
+      return false;
+    }
+
+    if (penetrationX < penetrationY)
+    {
+      float signX = Mathf.Sign(deltaX);
+      hit.delta.x = penetrationX * signX;
+      hit.delta.y = 0.0f;
+      hit.axis = 0;
+    }
+    else
+    {
+      float signY = Mathf.Sign(deltaY);
+      hit.delta.x = 0.0f;
+      hit.delta.y = penetrationY * signY;
+      hit.axis = 1;
+    }
+
+    return true;
+  }
+
+  private static bool IntersectionMovingBoxVsPoint(BoxColliderArcade moving, PointColliderArcade stationary, Vector2 next, ref PhysicsArcadeHit hit)
+  {
+    return false;
+  }
+
+  private static bool IntersectionMovingLineVsBox(PointColliderArcade moving, BoxColliderArcade stationary, Vector2 next, ref PhysicsArcadeHit hit)
+  {
+    return false;
+  }
+
+  private static bool IntersectionMovingLineVsPoint(PointColliderArcade moving, PointColliderArcade stationary, Vector2 next, ref PhysicsArcadeHit hit)
+  {
+    return false;
+  }
+
+}
+
+#endregion

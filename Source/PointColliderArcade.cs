@@ -27,9 +27,30 @@
 
 using UnityEngine;
 
-[AddComponentMenu("Physics Arcade/Map Collider Arcade")]
+[AddComponentMenu("Physics Arcade/Point Collider Arcade")]
+[RequireComponent(typeof(Rigidbody))]
 [DisallowMultipleComponent]
-public class MapColliderArcade : MonoBehaviour
+public class PointColliderArcade : ColliderArcade
 {
+  static readonly Vector2 kSkin = new Vector2(0.01f, 0.01f);
+
+  // Can the edge of this BoxCollider collide?
+  public override bool CanEdgeCollide(DirectionArcade direction)
+  {
+    return true;
+  }
+
+  // The bounds of this PointCollider
+  public override Bounds bounds
+  {
+    get
+    {
+      if (mTransform == null)
+        mTransform = gameObject.transform;
+
+      Vector3 position = mTransform.position;
+      return new Bounds(position + new Vector3(center.x, center.y, 0.0f), Vector2.Scale(kSkin, mTransform.localScale));
+    }
+  }
 }
 

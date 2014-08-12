@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(RigidbodyArcade))]
-[RequireComponent(typeof(BoxColliderArcade))]
+[RequireComponent(typeof(PointColliderArcade))]
 public class Projectile : MonoBehaviour
 {
   public ProjectileManager Manager;
 
   private Transform mTransform;
   private RigidbodyArcade mRigidBody;
-  private BoxColliderArcade mCollider;
+  private ColliderArcade mCollider;
   private float mTime;
 
   void Start()

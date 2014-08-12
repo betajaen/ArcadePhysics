@@ -694,8 +694,8 @@ GameObject:
   - 4: {fileID: 1210077835}
   - 212: {fileID: 1210077834}
   - 114: {fileID: 1210077833}
-  - 114: {fileID: 1210077837}
   - 114: {fileID: 1210077836}
+  - 114: {fileID: 1210077837}
   m_Layer: 10
   m_Name: Missile
   m_TagString: Untagged
@@ -784,16 +784,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1210077832}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fd18d84e815edd4c81eea415d655f43, type: 3}
+  m_Script: {fileID: 11500000, guid: 6a17038bda8fe934e87500749ad4340e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0}
-  collisionEdges: 15
-  touching: 0
-  trigger: 0
   mGroup: 0
-  mSize: {x: .0399999991, y: .0399999991}
-  mHalfSize: {x: .0199999996, y: .0199999996}
+  mSize: {x: 1, y: 1}
+  mHalfSize: {x: .5, y: .5}
 --- !u!1 &1464988054
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,8 +42,8 @@ public enum DirectionArcade
   All = Horizontal | Vertical
 }
 
+
 [AddComponentMenu("Physics Arcade/Rigidbody Arcade")]
-[RequireComponent(typeof(BoxColliderArcade))]
 [DisallowMultipleComponent]
 public class RigidbodyArcade : MonoBehaviour
 {
@@ -103,7 +103,7 @@ public class RigidbodyArcade : MonoBehaviour
   }
 
   //
-  public BoxColliderArcade colliderArcade
+  public ColliderArcade colliderArcade
   {
     get { return mCollider; }
   }
@@ -116,14 +116,14 @@ public class RigidbodyArcade : MonoBehaviour
   internal Vector2 mDelta;
   internal Vector2 mDeltaAbs;
   internal Vector2 mDeltaSign;
-  private BoxColliderArcade mCollider;
-  private List<BoxColliderArcade> mFriendlyIntersectingColliders;
+  private ColliderArcade mCollider;
+  private List<ColliderArcade> mFriendlyIntersectingColliders;
 
   void Awake()
   {
     if (mFriendlyIntersectingColliders == null)
     {
-      mFriendlyIntersectingColliders = new List<BoxColliderArcade>(4);
+      mFriendlyIntersectingColliders = new List<ColliderArcade>(4);
     }
   }
 
@@ -136,7 +136,7 @@ public class RigidbodyArcade : MonoBehaviour
   {
     mGameObject = gameObject;
     mTransform = gameObject.transform;
-    mCollider = GetComponent<BoxColliderArcade>();
+    mCollider = GetComponent<ColliderArcade>();
     PhysicsArcade.Internal.instance.Add(this);
   }
 
@@ -190,7 +190,7 @@ public class RigidbodyArcade : MonoBehaviour
     return mTransformUpdateNeeded;
   }
 
-  public void FixedPostUpdateArcade(List<BoxColliderArcade> colliders)
+  public void FixedPostUpdateArcade(List<ColliderArcade> colliders)
   {
     int colliderCount = colliders.Count;
 
@@ -200,7 +200,7 @@ public class RigidbodyArcade : MonoBehaviour
 
     for (int i = 0; i < colliderCount; i++)
     {
-      BoxColliderArcade collider = colliders[i];
+      ColliderArcade collider = colliders[i];
       if (collider == mCollider)
         continue;
 
@@ -209,8 +209,10 @@ public class RigidbodyArcade : MonoBehaviour
       if (layerCollisionIgnored)
         continue;
 
-      if (mCollider.MovingIntersection(collider, nextPosition, ref hit) == false)
+      if (ColliderArcade.IntersectionMoving(mCollider, collider, nextPosition, ref hit) == false)
         continue;
+      //if (mCollider.MovingIntersection(collider, nextPosition, ref hit) == false)
+      // continue;
 
       if (hit.axis == 0)
       {
@@ -368,5 +370,6 @@ public class RigidbodyArcade : MonoBehaviour
       velocity = -max_velocity;
     return velocity;
   }
+
 
 }
