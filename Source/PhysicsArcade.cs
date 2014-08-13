@@ -640,7 +640,45 @@ public abstract class ColliderArcade : MonoBehaviour
 
   private static bool IntersectionMovingLineVsBox(PointColliderArcade moving, BoxColliderArcade stationary, Vector2 next, ref PhysicsArcadeHit hit)
   {
-    return false;
+    Vector2 pos = (Vector2)moving.mTransform.position + moving.center;
+    Vector2 otherPos = (Vector2)stationary.mTransform.position + stationary.center;
+
+    Vector2 otherSize = Vector2.Scale(stationary.mHalfSize, stationary.mTransform.localScale);
+
+    float deltaX = next.x - pos.x;
+    float deltaY = next.y - pos.y;
+
+    float scaleX = 1.0f / deltaX;
+    float scaleY = 1.0f / deltaY;
+
+    float signX = Mathf.Sign(scaleX);
+    float signY = Mathf.Sign(scaleY);
+
+    float nearX = (otherPos.x - signX * otherSize.x - pos.x) * scaleX;
+    float nearY = (otherPos.y - signY * otherSize.y - pos.y) * scaleY;
+    float farX = (otherPos.x + signX * otherSize.x - pos.x) * scaleX;
+    float farY = (otherPos.y + signY * otherSize.y - pos.y) * scaleY;
+
+    if (nearX > farY || nearY > farX)
+      return false;
+
+    float near = nearX > nearY ? nearX : nearY;
+    float far = farX < farY ? farX : farY;
+
+    if (near >= 1.0f || far <= 0)
+      return false;
+
+    float time = Mathf.Clamp01(near);
+    if (nearX > nearY)
+      hit.axis = 0;
+    else
+      hit.axis = 1;
+
+    hit.delta.x = (1.0f - time) * deltaX;
+    hit.delta.y = (1.0f - time) * deltaY;
+
+    return true;
+
   }
 
   private static bool IntersectionMovingLineVsPoint(PointColliderArcade moving, PointColliderArcade stationary, Vector2 next, ref PhysicsArcadeHit hit)
