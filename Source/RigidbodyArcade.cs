@@ -42,6 +42,7 @@ public enum DirectionArcade
   All = Horizontal | Vertical
 }
 
+public delegate void OnRigidbodyArcadeTransformUpdate(RigidbodyArcade arcade);
 
 [AddComponentMenu("Physics Arcade/Rigidbody Arcade")]
 [DisallowMultipleComponent]
@@ -107,6 +108,10 @@ public class RigidbodyArcade : MonoBehaviour
   {
     get { return mCollider; }
   }
+
+  //
+  public OnRigidbodyArcadeTransformUpdate onTransformUpdated;
+
 
   private GameObject mGameObject;
   private Transform mTransform;
@@ -185,7 +190,7 @@ public class RigidbodyArcade : MonoBehaviour
     mDeltaSign.x = Mathf.Sign(mDelta.x);
     mDeltaSign.y = Mathf.Sign(mDelta.y);
 
-    mTransformUpdateNeeded = mDeltaAbs.y > Mathf.Epsilon; // || mDeltaAbs.x > Mathf.Epsilon
+    mTransformUpdateNeeded = mDeltaAbs.y > Mathf.Epsilon || mDeltaAbs.x > Mathf.Epsilon;
 
     return mTransformUpdateNeeded;
   }
@@ -344,6 +349,10 @@ public class RigidbodyArcade : MonoBehaviour
         mTransformUpdateNeeded = false;
         interpolatedPosition = nextPosition;
         mTransform.position = nextPosition;
+        if (onTransformUpdated != null)
+        {
+          onTransformUpdated(this);
+        }
       }
     }
   }
